@@ -7,16 +7,13 @@ const Home = () => {
 	return (
 		<div>
 			<Appbar />
-
 			<Box
 				sx={{
 					minHeight: 935,
 					m: 2,
 					display: "flex",
-					alignItems: "center",
+					alignItems: "start",
 					justifyContent: "center",
-					flexWrap: "wrap",
-					gap: 1,
 				}}>
 				<Products />
 			</Box>
