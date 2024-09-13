@@ -5,35 +5,75 @@ import Typography from "@mui/material/Typography";
 import CardActionArea from "@mui/material/CardActionArea";
 import products from "../../data/Products";
 import StarRoundedIcon from "@mui/icons-material/StarRounded";
-import { Box, Input } from "@mui/material";
+import {
+	Box,
+	FormControl,
+	Input,
+	InputLabel,
+	MenuItem,
+	Select,
+} from "@mui/material";
 import { orange } from "@mui/material/colors";
 import { useState } from "react";
 
 const Products = () => {
 	const [searchTerm, setSearchTerm] = useState("");
+	const [categoryTerm, setCategoryTerm] = useState("");
 
 	const searchFunction = (e) => {
-		setSearchTerm(e.target.value);
+		const { name, value } = e.target;
 
-		// console.log(e.target.value);
+		if (name === "search") {
+			setSearchTerm(value);
+		} else if (name === "category") {
+			if (value === "all") {
+				setCategoryTerm("");
+			} else {
+				setCategoryTerm(value);
+			}
+		}
 	};
 
 	const filtered = (product) => {
-		return product.name.toLowerCase().includes(searchTerm.toLowerCase());
+		const name = product.name.toLowerCase().includes(searchTerm.toLowerCase());
+		const category = product.category
+			.toLowerCase()
+			.includes(categoryTerm.toLowerCase());
+		return name && category;
 	};
 
 	const filteredProduct = products.filter(filtered);
 
+	const categories = [
+		...new Set(filteredProduct.map((product) => product.category)),
+	];
+
 	return (
 		<Box sx={{ display: "flex", flexDirection: "column", width: "100%", p: 2 }}>
-			<Box>
+			<Box sx={{ display: "flex", justifyContent: "space-between" }}>
 				<Input
 					placeholder="Cari sesuatu ..."
+					name="search"
 					type="text"
 					onChange={searchFunction}
 					value={searchTerm}
 					sx={{ p: 1 }}
 				/>
+				<FormControl sx={{ width: 300 }}>
+					<InputLabel>Kategori</InputLabel>
+					<Select
+						name="category"
+						label="Kategori"
+						value={searchTerm}
+						onChange={searchFunction}>
+						<MenuItem value="all">Semua Produk</MenuItem>
+						{categories.map((item, index) => (
+							<MenuItem key={index} value={item}>
+								{item}
+							</MenuItem>
+						))}
+					</Select>
+				</FormControl>
 			</Box>
 
 			<Box
