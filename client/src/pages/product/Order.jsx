@@ -1,17 +1,27 @@
 import { Box, Button, IconButton, Typography } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
+import SelectOptions from "./SelectOptions";
+import { useState } from "react";
 
 const Order = () => {
+	const [provincie, setProvince] = useState("");
+	const [city, setCity] = useState("");
+	const [courier, setCourier] = useState("");
+	const [service, setService] = useState("");
+	const [address, setAddress] = useState("");
+
 	return (
 		<Box
 			sx={{
-				width: "100%",
+				width: "80%",
 				borderRadius: "10px",
-				padding: "10px",
+				padding: "15px",
 				display: "flex",
 				flexDirection: "column",
 				gap: "10px",
+				height: "700px",
+				boxShadow: 6,
 			}}>
 			<Typography variant="h6" fontWeight="bold">
 				Atur Jumlah
@@ -69,7 +79,15 @@ const Order = () => {
 
 			<Typography fontWeight="bold">Alamat Pengiriman</Typography>
 
-			<Box>Select Option</Box>
+			<Box>
+				<SelectOptions
+					provinsi={(p) => setProvince(p)}
+					kota={(c) => setCity(c)}
+					kurir={(c) => setCourier(c)}
+					layanan={(s) => setService(s)}
+					alamat={(a) => setAddress(a)}
+				/>
+			</Box>
 
 			<Box
 				sx={{
@@ -102,7 +120,7 @@ const Order = () => {
 			</Box>
 
 			<Button variant="contained">Keranjang</Button>
-			<Button>Beli</Button>
+			<Button variant="outlined">Beli</Button>
 		</Box>
 	);
 };
