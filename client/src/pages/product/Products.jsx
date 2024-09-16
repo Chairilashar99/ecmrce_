@@ -11,12 +11,16 @@ import {
 	Input,
 	InputLabel,
 	MenuItem,
+	Pagination,
 	Select,
 } from "@mui/material";
 import { orange } from "@mui/material/colors";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const Products = () => {
+	const navigate = useNavigate();
+
 	const [searchTerm, setSearchTerm] = useState("");
 	const [categoryTerm, setCategoryTerm] = useState("");
 
@@ -47,6 +51,23 @@ const Products = () => {
 	const categories = [
 		...new Set(filteredProduct.map((product) => product.category)),
 	];
+
+	const productsPerPage = 30;
+	const [currentPage, setCurrentPage] = useState(1);
+
+	const startIndex = (currentPage - 1) * productsPerPage;
+	const endIndex = startIndex + productsPerPage;
+
+	const paginatedProducts = filteredProduct.slice(startIndex, endIndex);
+	const pageCount = Math.ceil(filteredProduct.length / productsPerPage);
+
+	const pageChanging = (event, page) => {
+		setCurrentPage(page);
+	};
+
+	const detailProductPage = (product) => {
+		navigate(`/${product}`);
+	};
 
 	return (
 		<Box sx={{ display: "flex", flexDirection: "column", width: "100%", p: 2 }}>
@@ -84,8 +105,15 @@ const Products = () => {
 					justifyContent: "center",
 					mt: 2,
 				}}>
-				{filteredProduct.map((product) => (
-					<Card key={product.name} sx={{ width: 210, minHeight: 280 }}>
+				{paginatedProducts.map((product) => (
+					<Card
+						key={product.name}
+						sx={{
+							width: 210,
+							minHeight: 280,
+							"&:hover": { cursor: "pointer" },
+						}}
+						onClick={() => detailProductPage(product.name)}>
 						<CardActionArea>
 							<CardMedia
 								component="img"
@@ -111,6 +139,14 @@ const Products = () => {
 						</CardContent>
 					</Card>
 				))}
+			</Box>
+
+			<Box sx={{ p: 2, display: "flex", justifyContent: "center" }}>
+				<Pagination
+					count={pageCount || 1}
+					page={currentPage}
+					onChange={pageChanging}
+				/>
 			</Box>
 		</Box>
 	);
