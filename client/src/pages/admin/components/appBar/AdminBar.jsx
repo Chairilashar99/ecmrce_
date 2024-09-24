@@ -8,9 +8,12 @@ import MenuIcon from "@mui/icons-material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import Menu from "@mui/material/Menu";
 import AdminPanelSettingsIcon from "@mui/icons-material/AdminPanelSettings";
+import { Drawer } from "@mui/material";
+import Sidebar from "../sidebar/Sidebar";
 
 const AdminBar = () => {
 	const [anchorEl, setAnchorEl] = React.useState(null);
+	const [open, setOpen] = React.useState(false);
 
 	const handleMenu = (event) => {
 		setAnchorEl(event.currentTarget);
@@ -18,6 +21,10 @@ const AdminBar = () => {
 
 	const handleClose = () => {
 		setAnchorEl(null);
+	};
+
+	const toggleDrawer = (newOpen) => () => {
+		setOpen(newOpen);
 	};
 
 	return (
@@ -29,11 +36,16 @@ const AdminBar = () => {
 						edge="start"
 						color="inherit"
 						aria-label="menu"
-						sx={{ mr: 2 }}>
+						sx={{ mr: 2 }}
+						onClick={toggleDrawer(true)}>
 						<MenuIcon />
 					</IconButton>
+					<Drawer open={open} onClose={toggleDrawer(false)}>
+						<Sidebar />
+					</Drawer>
+
 					<Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-						Photos
+						Administrator
 					</Typography>
 
 					<IconButton
