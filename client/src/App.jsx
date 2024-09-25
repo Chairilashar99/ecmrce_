@@ -6,6 +6,7 @@ import Cart from "./pages/cart/Cart";
 import Profile from "./pages/user/Profile";
 import Order from "./pages/user/order/Order";
 import Dashboard from "./pages/admin/dashboard/Dashboard";
+import UsersPage from "./pages/admin/users/UsersPage";
 
 function App() {
 	return (
@@ -16,7 +17,9 @@ function App() {
 				<Route path="/cart" element={<Cart />} />
 				<Route path="/profile" element={<Profile />} />
 				<Route path="/order" element={<Order />} />
+
 				<Route path="/admin-dashboard" element={<Dashboard />} />
+				<Route path="/admin-pelanggan" element={<UsersPage />} />
 			</Routes>
 		</BrowserRouter>
 	);
