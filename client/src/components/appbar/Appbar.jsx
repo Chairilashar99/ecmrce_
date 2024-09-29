@@ -11,7 +11,7 @@ import { useNavigate } from "react-router-dom";
 
 const Appbar = () => {
 	const navigate = useNavigate();
-	const user = "admin";
+	const user = "";
 
 	const userMenu = [
 		{
@@ -41,6 +41,8 @@ const Appbar = () => {
 	const toCart = () => navigate("/cart");
 
 	const toHome = () => navigate("/");
+
+	const toLoginPage = () => navigate("/login");
 
 	const toPage = (link) => {
 		navigate(link);
@@ -120,7 +122,7 @@ const Appbar = () => {
 								</Menu>
 							</>
 						) : (
-							<IconButton color="inherit">
+							<IconButton color="inherit" onClick={toLoginPage}>
 								<LoginIcon />
 							</IconButton>
 						)}
