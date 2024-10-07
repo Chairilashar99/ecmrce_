@@ -10,13 +10,13 @@ const productSchema = new Schema(
 		profit: { type: Number, required: true },
 		stock: { type: Number, required: true },
 		weight: { type: Number, required: true },
-		rating: { type: Number, required: true },
+		rating: { type: Number, required: false },
 		images: [{ link: { type: String, required: false } }],
 		reviews: [
 			{
 				user: { type: Schema.Types.ObjectId },
-				rating: { type: Number, required: true },
-				commebt: { type: String, required: false },
+				rating: { type: Number, required: false, default: 0 },
+				comment: { type: String, required: false },
 			},
 		],
 	},
