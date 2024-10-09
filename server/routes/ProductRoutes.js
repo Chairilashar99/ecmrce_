@@ -1,5 +1,6 @@
 import express from "express";
 import Product from "../models/Product.js";
+import { authenticate } from "../middleware/authenticate.js";
 
 const router = express.Router();
 
@@ -29,7 +30,7 @@ router.get("/:name", async (req, res) => {
 	}
 });
 
-router.post("/add-product", async (req, res) => {
+router.post("/add-product", authenticate(["admin"]), async (req, res) => {
 	try {
 		const { name, desc, category, price, capital, stock, weight } = req.body;
 
@@ -55,7 +56,7 @@ router.post("/add-product", async (req, res) => {
 	}
 });
 
-router.delete("/delete/:id", async (req, res) => {
+router.delete("/delete/:id", authenticate(["admin"]), async (req, res) => {
 	try {
 		const product = await Product.findById(req.params.id);
 
@@ -70,7 +71,7 @@ router.delete("/delete/:id", async (req, res) => {
 	}
 });
 
-router.put("/update/:id", async (req, res) => {
+router.put("/update/:id", authenticate(["admin"]), async (req, res) => {
 	try {
 		let product = await Product.findById(req.params.id);
 
