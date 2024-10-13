@@ -1,0 +1,65 @@
+import express from "express";
+import midtransClient from "midtrans-client";
+import { authenticate } from "../middleware/authenticate.js";
+
+const router = express.Router();
+
+router.post(
+	"/process-transaction",
+	authenticate(["user"]),
+	async (req, res) => {
+		try {
+			console.log(req.body);
+
+			const snap = new midtransClient.Snap({
+				isProduction: false, //false = masih pakai sandbox, true = sudah production
+				serverKey: process.env.SERVER_KEY,
+				clientKey: process.env.CLIENT_KEY,
+			});
+
+			const parameter = {
+				transaction_details: {
+					order_id: req.body.orderId,
+					gross_amount: req.body.amount,
+				},
+				customer_details: {
+					first_name: req.body.name,
+					email: req.body.email,
+					phone: req.body.phone,
+				},
+				callbacks: {
+					finish: `${process.env.DOMAIN}`,
+				},
+				enabled_payment: [
+					"mandiri_clickpay",
+					"bca_clickpay",
+					"bni_va",
+					"bca_va",
+					"permata_va",
+					"other_va",
+				],
+			};
+
+			snap
+				.createTransaction(parameter)
+				.then((transaction) => {
+					const dataPayment = {
+						midtransResponse: JSON.stringify(transaction),
+					};
+
+					const transactionToken = transaction.token;
+
+					res.status(200).json({ token: transactionToken, dataPayment });
+				})
+				.catch((error) => {
+					console.log(error);
+
+					res.status(400).json({ error: error.message });
+				});
+		} catch (error) {
+			return res.status(500).json({ error: error.message });
+		}
+	}
+);
+
+export default router;
