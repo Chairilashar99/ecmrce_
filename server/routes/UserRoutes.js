@@ -51,7 +51,7 @@ router.post("/login", async (req, res) => {
 					}
 					const token = generateToken(user);
 
-					res.status(200).cookie("token", token).json({ isLogin: true });
+					res.status(200).cookie("token", token).json({ isLogin: true, user });
 				});
 			}
 		})(req, res);
