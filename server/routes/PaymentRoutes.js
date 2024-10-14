@@ -1,4 +1,4 @@
-import express from "express";
+import express, { response } from "express";
 import midtransClient from "midtrans-client";
 import { authenticate } from "../middleware/authenticate.js";
 
@@ -55,6 +55,31 @@ router.post(
 					console.log(error);
 
 					res.status(400).json({ error: error.message });
+				});
+		} catch (error) {
+			return res.status(500).json({ error: error.message });
+		}
+	}
+);
+
+router.get(
+	"/status/:orderId",
+	authenticate(["admin", "user"]),
+	async (req, res) => {
+		try {
+			const snap = new midtransClient.Snap({
+				isProduction: false,
+				serverKey: process.env.SERVER_KEY,
+				clientKey: process.env.CLIENT_KEY,
+			});
+
+			snap.transaction
+				.status(req.params.orderId)
+				.then((response) => {
+					res.status(200).json(response);
+				})
+				.catch((error) => {
+					res.status(400).json({ error: "Order tidak ditemukan" });
 				});
 		} catch (error) {
 			return res.status(500).json({ error: error.message });
