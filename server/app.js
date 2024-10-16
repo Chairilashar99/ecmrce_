@@ -12,6 +12,9 @@ import cartRoutes from "./routes/CartRoutes.js";
 import shippingRoutes from "./routes/ShippingRoutes.js";
 import paymentRoutes from "./routes/PaymentRoutes.js";
 import orderRoutes from "./routes/OrderRoutes.js";
+import googleRoutes from "./routes/GoogleRoutes.js";
+
+import { Strategy as GoogleStrategy } from "passport-google-oauth2";
 
 const app = express();
 app.use(cors());
@@ -41,6 +44,34 @@ passport.use(User.createStrategy());
 passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
 
+passport.use(
+	new GoogleStrategy(
+		{
+			clientID: process.env.CLIENT_ID,
+			clientSecret: process.env.CLIENT_SECRET,
+			callbackURL: "/auth/google/ecommerce",
+			// userProfileURL: "https://www.googleapis.com/oauth2/v3/userinfo",
+			// scope: ["profile", "email"],
+		},
+		function (accessToken, refreshToken, profile, cb) {
+			User.findOrCreate(
+				{
+					googleId: profile.id,
+				},
+				{
+					name: profile.displayName,
+					username: profile.emails[0].value,
+					avatar: profile.photos[0].value,
+				},
+				function (err, user) {
+					return cb(err, user);
+				}
+			);
+		}
+	)
+);
+
+app.use("/auth", googleRoutes);
 app.use("/user", userRoutes);
 app.use("/products", productsRoutes);
 app.use("/cart", cartRoutes);
