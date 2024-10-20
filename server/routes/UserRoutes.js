@@ -3,6 +3,7 @@ import User from "../models/User.js";
 import jwt from "jsonwebtoken";
 import passport from "passport";
 import { authenticate } from "../middleware/authenticate.js";
+import SendEmail from "../utils/sendEmail.js";
 
 const router = express.Router();
 
@@ -118,6 +119,37 @@ router.delete("/delete/:id", authenticate(["admin"]), async (req, res) => {
 		res.status(200).json({ message: "User berhasil dihapus" });
 	} catch (error) {
 		return res.status(500).json({ error: error });
+	}
+});
+
+// Kirim email
+router.post("/send-email", async (req, res) => {
+	try {
+		const user = await User.findOne({ username: req.body.email });
+
+		if (!user) {
+			return res.status(404).json({ error: "Email tidak ditemukan" });
+		}
+
+		const token = user.PasswordToken();
+
+		await user.save({ validateBeforeSave: true });
+
+		const url = `${process.env.DOMAIN}/reset-password/${token}`;
+
+		const message = `Klik link ini: ${url}`;
+
+		await SendEmail({
+			email: user.username,
+			subject: "Reset Password",
+			message,
+		});
+
+		res.status(200).json({
+			message: `Link reset password sudah terkirim ke email ${user.username}`,
+		});
+	} catch (error) {
+		return res.status(500).json({ error: error.message });
 	}
 });
 
