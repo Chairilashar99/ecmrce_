@@ -16,9 +16,9 @@ export const loginUser = createAsyncThunk(
 		try {
 			const { data } = await axios.post("/user/login", userData, config);
 
-			return data.user;
+			return data.user; //ini action.payload kalau sukses
 		} catch (error) {
-			return thunkApi.rejectWithValue(error.response.data.message);
+			return thunkApi.rejectWithValue(error.response.data.message); //ini action.payload kalau gagal
 		}
 	}
 );
