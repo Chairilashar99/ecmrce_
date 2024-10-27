@@ -17,7 +17,12 @@ import googleRoutes from "./routes/GoogleRoutes.js";
 import { Strategy as GoogleStrategy } from "passport-google-oauth2";
 
 const app = express();
-app.use(cors());
+app.use(
+	cors({
+		origin: process.env.DOMAIN,
+		credentials: true,
+	})
+);
 app.use(cookieParser());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
