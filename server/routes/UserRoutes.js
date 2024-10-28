@@ -153,6 +153,7 @@ router.post("/send-email", async (req, res) => {
 	}
 });
 
+// Logout
 router.post("/logout", (req, res) => {
 	try {
 		res.cookie("token", null, {
