@@ -12,8 +12,21 @@ import OrdersPage from "./pages/admin/orders/OrdersPage";
 import ReportPage from "./pages/admin/report/ReportPage";
 import LoginPage from "./components/login/LoginPage";
 import SignupPage from "./components/signup/SignupPage";
+import { useDispatch } from "react-redux";
+import { loadUser } from "./state/api/authApi";
+import { useEffect } from "react";
 
 function App() {
+	const dispatch = useDispatch();
+
+	useEffect(() => {
+		const load = localStorage.getItem("login");
+
+		if (load) {
+			dispatch(loadUser());
+		}
+	}, [dispatch]);
+
 	return (
 		<BrowserRouter>
 			<Routes>
