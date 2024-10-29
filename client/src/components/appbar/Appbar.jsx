@@ -6,12 +6,17 @@ import LoginIcon from "@mui/icons-material/Login";
 import ShoppingCartOutlinedIcon from "@mui/icons-material/ShoppingCartOutlined";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import { Menu, MenuItem } from "@mui/material";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { logoutUser } from "../../state/api/authApi";
+import iziToast from "izitoast";
 
 const Appbar = () => {
 	const navigate = useNavigate();
-	const user = "";
+	const dispatch = useDispatch();
+
+	const { user, isLogout, message } = useSelector((state) => state.auth);
 
 	const userMenu = [
 		{
@@ -49,6 +54,25 @@ const Appbar = () => {
 		menuClose();
 	};
 
+	const logout = () => dispatch(logoutUser());
+
+	useEffect(() => {
+		if (isLogout) {
+			iziToast.success({
+				title: "Success",
+				message: message,
+				position: "topRight",
+				timeout: 3000,
+			});
+
+			localStorage.removeItem("login");
+
+			// dispatch(authReset());
+
+			// navigate("/");
+		}
+	}, [isLogout, message]);
+
 	return (
 		<Box sx={{ flexGrow: 1 }}>
 			<AppBar position="static">
@@ -65,7 +89,7 @@ const Appbar = () => {
 							<ShoppingCartOutlinedIcon />
 						</IconButton>
 
-						{user === "user" ? (
+						{user?.role === "user" ? (
 							<>
 								<IconButton color="inherit" onClick={menuOpen}>
 									<AccountCircleIcon />
@@ -90,10 +114,10 @@ const Appbar = () => {
 										</MenuItem>
 									))}
 
-									<MenuItem>Logout</MenuItem>
+									<MenuItem onClick={() => logout()}>Logout</MenuItem>
 								</Menu>
 							</>
-						) : user === "admin" ? (
+						) : user?.role === "admin" ? (
 							<>
 								<IconButton color="inherit" onClick={menuOpen}>
 									<AccountCircleIcon />
@@ -118,7 +142,7 @@ const Appbar = () => {
 										</MenuItem>
 									))}
 
-									<MenuItem>Logout</MenuItem>
+									<MenuItem onClick={() => logout()}>Logout</MenuItem>
 								</Menu>
 							</>
 						) : (
