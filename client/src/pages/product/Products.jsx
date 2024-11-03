@@ -3,7 +3,6 @@ import CardContent from "@mui/material/CardContent";
 import CardMedia from "@mui/material/CardMedia";
 import Typography from "@mui/material/Typography";
 import CardActionArea from "@mui/material/CardActionArea";
-import products from "../../data/Products";
 import StarRoundedIcon from "@mui/icons-material/StarRounded";
 import {
 	Box,
@@ -17,9 +16,12 @@ import {
 import { orange } from "@mui/material/colors";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useGetProductsQuery } from "../../state/api/productApi";
 
 const Products = () => {
 	const navigate = useNavigate();
+
+	const { data, error, isLoading } = useGetProductsQuery();
 
 	const [searchTerm, setSearchTerm] = useState("");
 	const [categoryTerm, setCategoryTerm] = useState("");
@@ -46,10 +48,10 @@ const Products = () => {
 		return name && category;
 	};
 
-	const filteredProduct = products.filter(filtered);
+	const filteredProduct = data?.filter(filtered);
 
 	const categories = [
-		...new Set(filteredProduct.map((product) => product.category)),
+		...new Set(filteredProduct?.map((product) => product.category)),
 	];
 
 	const productsPerPage = 30;
@@ -58,8 +60,8 @@ const Products = () => {
 	const startIndex = (currentPage - 1) * productsPerPage;
 	const endIndex = startIndex + productsPerPage;
 
-	const paginatedProducts = filteredProduct.slice(startIndex, endIndex);
-	const pageCount = Math.ceil(filteredProduct.length / productsPerPage);
+	const paginatedProducts = filteredProduct?.slice(startIndex, endIndex);
+	const pageCount = Math.ceil(filteredProduct?.length / productsPerPage);
 
 	const pageChanging = (event, page) => {
 		setCurrentPage(page);
@@ -105,7 +107,7 @@ const Products = () => {
 					justifyContent: "center",
 					mt: 2,
 				}}>
-				{paginatedProducts.map((product) => (
+				{paginatedProducts?.map((product) => (
 					<Card
 						key={product.name}
 						sx={{

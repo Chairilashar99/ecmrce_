@@ -11,6 +11,7 @@ import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { logoutUser } from "../../state/api/authApi";
 import iziToast from "izitoast";
+import { authReset } from "../../state/slice/authSlice";
 
 const Appbar = () => {
 	const navigate = useNavigate();
@@ -67,9 +68,9 @@ const Appbar = () => {
 
 			localStorage.removeItem("login");
 
-			// dispatch(authReset());
+			dispatch(authReset());
 
-			// navigate("/");
+			navigate("/");
 		}
 	}, [isLogout, message]);
 
