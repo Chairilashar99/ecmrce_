@@ -33,7 +33,9 @@ const Order = ({ product }) => {
 		{ skip: !city || !courier }
 	);
 
-	const services = servicesData[0]?.costs;
+	const services = servicesData && servicesData[0]?.costs;
+
+	const total = subtotal + service;
 
 	const increaseQty = () => {
 		if (qty < product?.stock) {
@@ -147,7 +149,7 @@ const Order = ({ product }) => {
 				</Typography>
 
 				<Typography fontWeight="bold" fontSize={20}>
-					Rp 3.000.000
+					Rp {parseFloat(service ? service : 0).toLocaleString("id-ID")}
 				</Typography>
 			</Box>
 
@@ -162,7 +164,7 @@ const Order = ({ product }) => {
 				</Typography>
 
 				<Typography fontWeight="bold" fontSize={20}>
-					Rp 3.000.000
+					Rp {parseFloat(total).toLocaleString("id-ID")}
 				</Typography>
 			</Box>
 
