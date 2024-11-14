@@ -8,8 +8,11 @@ import {
 	useGetProvincesQuery,
 	useGetServicesQuery,
 } from "../../state/api/shipmentApi";
+import { useSelector } from "react-redux";
+import iziToast from "izitoast";
 
 const Order = ({ product }) => {
+	const { isAuth } = useSelector((state) => state.auth);
 	const [qty, setQty] = useState(1);
 	const [subtotal, setSubtotal] = useState(0);
 
@@ -56,6 +59,54 @@ const Order = ({ product }) => {
 			setSubtotal(product?.price);
 		}
 	}, [product]);
+
+	const cartHandler = () => {
+		if (!isAuth) {
+			return iziToast.error({
+				title: "Error",
+				message: "Login dulu",
+				position: "topRight",
+				timeout: 3000,
+			});
+		}
+
+		// const data = {
+		// 	productId: product?._id,
+		// 	qty: qty,
+		// };
+
+		// createCart(data);
+	};
+
+	const buyHandler = () => {
+		if (!isAuth) {
+			return iziToast.error({
+				title: "Error",
+				message: "Login dulu",
+				position: "topRight",
+				timeout: 3000,
+			});
+		}
+
+		if (!address) {
+			return iziToast.error({
+				title: "Error",
+				message: "Masukan alamat",
+				position: "topRight",
+				timeout: 3000,
+			});
+		}
+
+		// const data = {
+		// 	orderId: id,
+		// 	amount: total,
+		// 	name: user?.name,
+		// 	email: user?.username,
+		// 	phone: user?.phone,
+		// };
+
+		// getToken(data);
+	};
 
 	return (
 		<Box
@@ -168,8 +219,12 @@ const Order = ({ product }) => {
 				</Typography>
 			</Box>
 
-			<Button variant="contained">Keranjang</Button>
-			<Button variant="outlined">Beli</Button>
+			<Button variant="contained" onClick={cartHandler}>
+				Keranjang
+			</Button>
+			<Button variant="outlined" onClick={buyHandler}>
+				Beli
+			</Button>
 		</Box>
 	);
 };
