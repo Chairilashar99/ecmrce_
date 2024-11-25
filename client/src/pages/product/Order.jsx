@@ -10,9 +10,16 @@ import {
 } from "../../state/api/shipmentApi";
 import { useSelector } from "react-redux";
 import iziToast from "izitoast";
+import { useGetTokenMutation } from "../../state/api/paymentApi";
+import { useCreateOrderMutation } from "../../state/api/orderApi";
 
 const Order = ({ product }) => {
-	const { isAuth } = useSelector((state) => state.auth);
+	const { isAuth, user } = useSelector((state) => state.auth);
+	const [getToken, { isLoading, data }] = useGetTokenMutation();
+	const [createOrder, { isSuccess, reset }] = useCreateOrderMutation();
+
+	console.log(data?.token);
+
 	const [qty, setQty] = useState(1);
 	const [subtotal, setSubtotal] = useState(0);
 
@@ -39,6 +46,9 @@ const Order = ({ product }) => {
 	const services = servicesData && servicesData[0]?.costs;
 
 	const total = subtotal + service;
+
+	const id = Date.now();
+	const token = data?.token;
 
 	const increaseQty = () => {
 		if (qty < product?.stock) {
@@ -97,16 +107,106 @@ const Order = ({ product }) => {
 			});
 		}
 
-		// const data = {
-		// 	orderId: id,
-		// 	amount: total,
-		// 	name: user?.name,
-		// 	email: user?.username,
-		// 	phone: user?.phone,
-		// };
+		const data = {
+			orderId: id,
+			amount: total,
+			name: user?.name,
+			email: user?.username,
+			phone: user?.phone,
+		};
 
-		// getToken(data);
+		getToken(data);
 	};
+
+	useEffect(() => {
+		if (token) {
+			window.snap.pay(token, {
+				onSuccess: (result) => {
+					const data = {
+						orderId: id,
+						user: user?._id,
+						address: address,
+						// shipment: shipment,
+						phone: user?.phone,
+						subtotal: subtotal,
+						payment: total,
+						paymentStatus: result.transaction_status,
+						shippingCost: service,
+						products: [
+							{
+								productId: product?._id,
+								qty: qty,
+								totalPrice: subtotal,
+								profit: product?.price * qty,
+							},
+						],
+					};
+
+					createOrder(data);
+				},
+				onPending: (result) => {
+					const data = {
+						orderId: id,
+						user: user?._id,
+						address: address,
+						// shipment: shipment,
+						phone: user?.phone,
+						subtotal: subtotal,
+						payment: total,
+						paymentStatus: result.transaction_status,
+						shippingCost: service,
+						products: [
+							{
+								productId: product?._id,
+								qty: qty,
+								totalPrice: subtotal,
+								profit: product?.profit * qty,
+							},
+						],
+					};
+					createOrder(data);
+				},
+				onError: (error) => {
+					iziToast.error({
+						title: "Error",
+						message: error,
+						position: "topRight",
+						timeout: 3000,
+					});
+				},
+				onClose: () => {
+					iziToast.info({
+						title: "Info",
+						message: "Segera lakukan pembayaran",
+						position: "topRight",
+						timeout: 3000,
+					});
+				},
+			});
+		}
+	}, [token]);
+
+	useEffect(() => {
+		const midtransScriptUrl = import.meta.env.VITE_MIDTRANS_URL;
+
+		let scriptTag = document.createElement("script");
+		scriptTag.src = midtransScriptUrl;
+
+		const myMidtransClientKey = import.meta.env.VITE_MIDTRANS_KEY;
+		scriptTag.setAttribute("data-client-key", myMidtransClientKey);
+
+		document.body.appendChild(scriptTag);
+
+		return () => {
+			document.body.removeChild(scriptTag);
+		};
+	}, []);
+
+	useEffect(() => {
+		if (isSuccess) {
+			reset();
+		}
+	}, [isSuccess, reset]);
 
 	return (
 		<Box
@@ -223,7 +323,7 @@ const Order = ({ product }) => {
 				Keranjang
 			</Button>
 			<Button variant="outlined" onClick={buyHandler}>
-				Beli
+				{isLoading ? "..." : "Beli"}
 			</Button>
 		</Box>
 	);

@@ -16,6 +16,7 @@ import SignupPage from "./components/signup/SignupPage";
 import { useDispatch } from "react-redux";
 import { loadUser } from "./state/api/authApi";
 import { useEffect } from "react";
+import Confirm from "./pages/product/Confirm";
 
 function App() {
 	const dispatch = useDispatch();
@@ -38,6 +39,8 @@ function App() {
 				<Route path="/cart" element={<Cart />} />
 				<Route path="/profile" element={<Profile />} />
 				<Route path="/order" element={<Order />} />
+
+				<Route path="/confirmation" element={<Confirm />} />
 
 				<Route path="/admin-dashboard" element={<Dashboard />} />
 				<Route path="/admin-pelanggan" element={<UsersPage />} />
