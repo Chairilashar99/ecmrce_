@@ -11,7 +11,6 @@ import {
 	TableRow,
 	Typography,
 } from "@mui/material";
-import OrdersData from "../../../data/OrdersData";
 import LocalMallIcon from "@mui/icons-material/LocalMall";
 import { blue } from "@mui/material/colors";
 
@@ -27,7 +26,7 @@ const Headers = [
 	{ name: "Action" },
 ];
 
-const ListOrders = () => {
+const ListOrders = ({ orders }) => {
 	return (
 		<>
 			<Box
@@ -58,9 +57,9 @@ const ListOrders = () => {
 							</TableRow>
 						</TableHead>
 						<TableBody>
-							{console.log(OrdersData)}
-							{OrdersData.map((item) => {
-								const date = new Date(item.createdAt.$date);
+							{/* {console.log(orders)} */}
+							{orders?.map((item) => {
+								const date = new Date(item.createdAt);
 
 								const options = {
 									year: "numeric",
@@ -73,8 +72,8 @@ const ListOrders = () => {
 								const formattedDate = date.toLocaleDateString("id-ID", options);
 
 								return (
-									<TableRow key={item.order}>
-										<TableCell align="center">{item.order}</TableCell>
+									<TableRow key={item._id}>
+										<TableCell align="center">{item.orderId}</TableCell>
 										<TableCell align="center">
 											<IconButton>
 												<LocalMallIcon sx={{ color: blue[500] }} />
@@ -84,12 +83,14 @@ const ListOrders = () => {
 											item.payment
 										).toLocaleString("id-ID")}`}</TableCell>
 										<TableCell align="center">{formattedDate}</TableCell>
-										<TableCell align="center">{item.status}</TableCell>
-										<TableCell align="center">{item.status_order}</TableCell>
+										<TableCell align="center">{item.paymentStatus}</TableCell>
+										<TableCell align="center">{item.orderStatus}</TableCell>
 										<TableCell align="center">{`Rp ${parseFloat(
-											item.shipping_cost
+											item.shippingCost
 										).toLocaleString("id-ID")}`}</TableCell>
-										<TableCell align="center">{item.resi}</TableCell>
+										<TableCell align="center">
+											{item.resi ? item.resi : "-"}
+										</TableCell>
 										<TableCell align="center">Action</TableCell>
 									</TableRow>
 								);
