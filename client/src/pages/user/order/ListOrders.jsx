@@ -1,5 +1,6 @@
 import {
 	Box,
+	Button,
 	IconButton,
 	Input,
 	Paper,
@@ -12,6 +13,8 @@ import {
 	Typography,
 } from "@mui/material";
 import LocalMallIcon from "@mui/icons-material/LocalMall";
+import MessageIcon from "@mui/icons-material/Message";
+import CloudSyncIcon from "@mui/icons-material/CloudSync";
 import { blue } from "@mui/material/colors";
 
 const Headers = [
@@ -23,7 +26,7 @@ const Headers = [
 	{ name: "Shipment" },
 	{ name: "Cost" },
 	{ name: "Resi" },
-	{ name: "Action" },
+	{ name: "Action", width: 90 },
 ];
 
 const ListOrders = ({ orders }) => {
@@ -50,7 +53,10 @@ const ListOrders = ({ orders }) => {
 						<TableHead>
 							<TableRow>
 								{Headers.map((item) => (
-									<TableCell key={item.name} align="center">
+									<TableCell
+										key={item.name}
+										align="center"
+										sx={{ maxWidth: item.width }}>
 										{item.name}
 									</TableCell>
 								))}
@@ -91,7 +97,21 @@ const ListOrders = ({ orders }) => {
 										<TableCell align="center">
 											{item.resi ? item.resi : "-"}
 										</TableCell>
-										<TableCell align="center">Action</TableCell>
+										<TableCell align="center" sx={{ display: "flex", gap: 2 }}>
+											<Button
+												startIcon={<CloudSyncIcon />}
+												variant="contained"
+												color="error">
+												update
+											</Button>
+
+											<Button
+												startIcon={<MessageIcon />}
+												variant="contained"
+												color="success">
+												review
+											</Button>
+										</TableCell>
 									</TableRow>
 								);
 							})}
