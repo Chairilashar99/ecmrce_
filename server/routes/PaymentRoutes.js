@@ -1,6 +1,7 @@
 import express, { response } from "express";
 import midtransClient from "midtrans-client";
 import { authenticate } from "../middleware/authenticate.js";
+import Order from "../models/Order.js";
 
 const router = express.Router();
 
@@ -72,14 +73,29 @@ router.get(
 				serverKey: process.env.SERVER_KEY,
 				clientKey: process.env.CLIENT_KEY,
 			});
-
 			snap.transaction
 				.status(req.params.orderId)
-				.then((response) => {
-					res.status(200).json(response);
+				.then(async (response) => {
+					const order = await Order.findOne({ orderId: req.params.orderId });
+
+					order.paymentStatus = response.transaction_status;
+
+					await order.save();
+
+					let message = "";
+
+					if (order.paymentStatus === "settlement") {
+						message = "Pembayaran diterima";
+					} else if (order.paymentStatus === "pending") {
+						message = "Menunggu pembayaran";
+					} else if (order.paymentStatus === "expire") {
+						message = "Pembayaran kaladuarsa";
+					}
+
+					res.status(200).json({ message });
 				})
 				.catch((error) => {
-					res.status(400).json({ error: "Order tidak ditemukan" });
+					res.status(404).json({ error: "Order tidak ditemukan" });
 				});
 		} catch (error) {
 			return res.status(500).json({ error: error.message });

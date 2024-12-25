@@ -123,7 +123,7 @@ const Order = ({ product }) => {
 			window.snap.pay(token, {
 				onSuccess: (result) => {
 					const data = {
-						orderId: id,
+						orderId: result.order_id,
 						user: user?._id,
 						address: address,
 						// shipment: shipment,
@@ -146,7 +146,7 @@ const Order = ({ product }) => {
 				},
 				onPending: (result) => {
 					const data = {
-						orderId: id,
+						orderId: result.order_id,
 						user: user?._id,
 						address: address,
 						// shipment: shipment,

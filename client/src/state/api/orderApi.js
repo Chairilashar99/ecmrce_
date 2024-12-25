@@ -21,7 +21,7 @@ export const orderApi = createApi({
 		// 		body,
 		// 	}),
 		// }),
-		getMyOrder: builder.query({
+		getMyOrder: builder.mutation({
 			query: () => "/my-order",
 			method: "GET",
 		}),
@@ -49,7 +49,7 @@ export const orderApi = createApi({
 
 export const {
 	useCreateOrderMutation,
-	useGetMyOrderQuery,
+	useGetMyOrderMutation,
 	// useCartOrderMutation,
 	// useGetOrdersQuery,
 	// useInputResiMutation,

@@ -16,6 +16,10 @@ import LocalMallIcon from "@mui/icons-material/LocalMall";
 import MessageIcon from "@mui/icons-material/Message";
 import CloudSyncIcon from "@mui/icons-material/CloudSync";
 import { blue } from "@mui/material/colors";
+import { useUpdateStatusMutation } from "../../../state/api/paymentApi.js";
+import { useGetMyOrderMutation } from "../../../state/api/orderApi.js";
+import iziToast from "izitoast";
+import { useEffect } from "react";
 
 const Headers = [
 	{ name: "Order" },
@@ -29,7 +33,36 @@ const Headers = [
 	{ name: "Action", width: 90 },
 ];
 
-const ListOrders = ({ orders }) => {
+const ListOrders = () => {
+	const [updateStatus, { isSuccess, error, isLoading, data }] =
+		useUpdateStatusMutation();
+	const [getMyOrder, { data: orders }] = useGetMyOrderMutation();
+
+	const updateHandler = (id) => updateStatus(id);
+
+	useEffect(() => {
+		if (isSuccess) {
+			iziToast.success({
+				title: " Success",
+				message: data?.message,
+				position: "topRight",
+				timeout: 3000,
+			});
+			getMyOrder();
+		} else {
+			// iziToast.error({
+			// 	title: " Error",
+			// 	message: data?.error,
+			// 	position: "topRight",
+			// 	timeout: 3000,
+			// });
+		}
+	}, [isSuccess, data]);
+
+	useEffect(() => {
+		getMyOrder();
+	}, []);
+
 	return (
 		<>
 			<Box
@@ -80,10 +113,19 @@ const ListOrders = ({ orders }) => {
 								return (
 									<TableRow key={item._id}>
 										<TableCell align="center">{item.orderId}</TableCell>
-										<TableCell align="center">
-											<IconButton>
-												<LocalMallIcon sx={{ color: blue[500] }} />
-											</IconButton>
+										<TableCell
+											align="center"
+											sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
+											{item.products.map((product) => (
+												<Box key={product._id}>
+													<Typography align="left">
+														Item : {product.productId.name}
+													</Typography>
+													<Typography align="left">
+														Jumlah : {product.qty}
+													</Typography>
+												</Box>
+											))}
 										</TableCell>
 										<TableCell align="center">{`Rp ${parseFloat(
 											item.payment
@@ -101,14 +143,24 @@ const ListOrders = ({ orders }) => {
 											<Button
 												startIcon={<CloudSyncIcon />}
 												variant="contained"
-												color="error">
-												update
+												color="error"
+												onClick={() => updateHandler(item.orderId)}
+												disabled={
+													item.paymentStatus === "settlement" ||
+													item.paymentStatus === "expire"
+												}>
+												{isLoading ? "..." : "update"}
 											</Button>
 
 											<Button
 												startIcon={<MessageIcon />}
 												variant="contained"
-												color="success">
+												color="success"
+												sx={{ ml: 2 }}
+												disabled={
+													item.paymentStatus === "expire" ||
+													item.paymentStatus === "pending"
+												}>
 												review
 											</Button>
 										</TableCell>
