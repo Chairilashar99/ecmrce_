@@ -19,7 +19,8 @@ import { blue } from "@mui/material/colors";
 import { useUpdateStatusMutation } from "../../../state/api/paymentApi.js";
 import { useGetMyOrderMutation } from "../../../state/api/orderApi.js";
 import iziToast from "izitoast";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import Review from "./Review.jsx";
 
 const Headers = [
 	{ name: "Order" },
@@ -39,6 +40,20 @@ const ListOrders = () => {
 	const [getMyOrder, { data: orders }] = useGetMyOrderMutation();
 
 	const updateHandler = (id) => updateStatus(id);
+
+	const [open, setOpen] = useState(false);
+	const [product, setProduct] = useState("");
+
+	const reviewHandler = (id) => {
+		for (const order of orders) {
+			for (const product of order.products) {
+				if (product.productId._id === id) {
+					setProduct(product.productId);
+				}
+			}
+		}
+		setOpen(true);
+	};
 
 	useEffect(() => {
 		if (isSuccess) {
@@ -117,13 +132,33 @@ const ListOrders = () => {
 											align="center"
 											sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
 											{item.products.map((product) => (
-												<Box key={product._id}>
-													<Typography align="left">
-														Item : {product.productId.name}
-													</Typography>
-													<Typography align="left">
-														Jumlah : {product.qty}
-													</Typography>
+												<Box
+													sx={{
+														display: "flex",
+														gap: 2,
+														justifyContent: "space-between",
+													}}>
+													<Box key={product._id}>
+														<Typography align="left">
+															Item : {product.productId.name}
+														</Typography>
+														<Typography align="left">
+															Jumlah : {product.qty}
+														</Typography>
+													</Box>
+
+													<Button
+														startIcon={<MessageIcon />}
+														variant="contained"
+														color="success"
+														sx={{ ml: 2 }}
+														onClick={() => reviewHandler(product.productId._id)}
+														disabled={
+															item.paymentStatus === "expire" ||
+															item.paymentStatus === "pending"
+														}>
+														review
+													</Button>
 												</Box>
 											))}
 										</TableCell>
@@ -151,18 +186,6 @@ const ListOrders = () => {
 												}>
 												{isLoading ? "..." : "update"}
 											</Button>
-
-											<Button
-												startIcon={<MessageIcon />}
-												variant="contained"
-												color="success"
-												sx={{ ml: 2 }}
-												disabled={
-													item.paymentStatus === "expire" ||
-													item.paymentStatus === "pending"
-												}>
-												review
-											</Button>
 										</TableCell>
 									</TableRow>
 								);
@@ -170,6 +193,7 @@ const ListOrders = () => {
 						</TableBody>
 					</Table>
 				</TableContainer>
+				<Review open={open} close={() => setOpen(false)} product={product} />
 			</Paper>
 		</>
 	);

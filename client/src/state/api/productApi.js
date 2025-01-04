@@ -13,13 +13,13 @@ export const productApi = createApi({
 		getProduct: builder.query({
 			query: (name) => `${name}`,
 		}),
-		// giveReview: builder.mutation({
-		// 	query: ({ id, body }) => ({
-		// 		url: `/give-review/${id}`,
-		// 		method: "POST",
-		// 		body,
-		// 	}),
-		// }),
+		giveReview: builder.mutation({
+			query: ({ id, body }) => ({
+				url: `/give-review/${id}`,
+				method: "POST",
+				body,
+			}),
+		}),
 		// deleteProduct: builder.mutation({
 		// 	query: (id) => ({
 		// 		url: `/delete/${id}`,
@@ -104,7 +104,7 @@ export const productApi = createApi({
 export const {
 	useGetProductsQuery,
 	useGetProductQuery,
-	// useGiveReviewMutation,
+	useGiveReviewMutation,
 	// useDeleteProductMutation,
 	// useDeleteProductsMutation,
 	// useAddProductMutation,

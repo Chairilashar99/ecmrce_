@@ -14,9 +14,10 @@ const productSchema = new Schema(
 		images: [{ link: { type: String, required: false } }],
 		reviews: [
 			{
-				user: { type: Schema.Types.ObjectId },
+				user: { type: String },
+				product: { type: Schema.Types.ObjectId },
 				rating: { type: Number, required: false, default: 0 },
-				comment: { type: String, required: false },
+				review: { type: String, required: false },
 			},
 		],
 	},
